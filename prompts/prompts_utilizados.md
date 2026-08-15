@@ -130,9 +130,62 @@ Já criei a estrutura de pastas, qual o próximo passo?
 
 ---
 
+## Etapa 7 — Modelagem de Dados no Power BI (com Claude)
+
+**Processo:** o Claude guiou, passo a passo e por meio de imagens da tela do Power BI Desktop enviadas pelo usuário, a modelagem de dados a partir da base v4:
+- Importação das 6 abas via Power Query, com limpeza de cabeçalho
+- Extração de uma tabela `Dim_Marca` (via Referência, não Duplicação) a partir da `Tabela_Modelos`, para evitar duplicação de linhas nos relacionamentos
+- Criação de uma tabela `Calendario` para Time Intelligence
+- Criação dos relacionamentos entre `Fato_Vendas`, `Market_Share`, `Crescimento_YoY` e `Dim_Marca`
+- Criação e correção iterativa da medida DAX `Total_Vendas` — identificado e corrigido um erro de contagem duplicada causado pela linha "Peugeot + Citroën (combinado)" aparecer somada junto com as linhas individuais de Peugeot e Citroën
+
+Esse processo envolveu 3 rodadas de diagnóstico de erro (double counting), cada uma feita a partir da leitura de prints reais da tela do Power BI enviados pelo usuário, comparando os valores exibidos nos cartões com o que seria matematicamente esperado.
+
+---
+
+## Etapa 8 — Construção Visual do Dashboard (com Gemini)
+
+**Ferramenta:** Google Gemini, usando a mesma base de dados v4 e o modelo de dados já validado com o Claude.
+
+**O que foi produzido pelo usuário com apoio do Gemini** (resumo do próprio usuário, registrado aqui para transparência do processo):
+
+1. **Reestruturação e Refinamento do Power BI:**
+   - Diagnóstico da Página 3 (Comparativo de Produtos): identificação de que a soma de preços e a filtragem isolada da Stellantis estavam poluindo a visualização
+   - Implementação de gráfico de dispersão (Preço Base vs. Potência), com ajuste de escala e tamanho dos marcadores
+   - Substituição de gráfico de pizza por gráfico de barras empilhadas (Tipos de Motores por Marca)
+   - Renomeação de cabeçalhos para termos executivos (Preço Base, Potência, Autonomia Elétrica, Assistência ADAS)
+
+2. **Análise e extração de insights das 3 páginas construídas:**
+   - Volume absoluto: Stellantis lidera o volume acumulado analisado (~64,6%), sustentada por Fiat e Jeep
+   - Velocidade de crescimento: GWM +46% e BYD +45,4% a/a (2024-2025), enquanto marcas tradicionais enfrentam estagnação/retração
+   - Produto: modelos chineses entregam maior potência e pacotes ADAS na faixa de R$ 170 mil a R$ 250 mil
+
+3. **Redação da resposta do Cenário 1 do formulário**, articulando o diagnóstico com a estratégia multimarca da Stellantis (Fiat/Citroën na proteção de volume via Bio-Hybrid, Jeep no SUV Premium/PHEV, Leapmotor como resposta tecnológica em BEV/REEV)
+
+4. **Ajustes visuais e de design:** correção de zoom/canvas, alinhamento de plano de fundo, diretrizes de captura de prints para o GitHub e a apresentação
+
+**Resultado final:** 3 páginas de dashboard — Panorama de Mercado, Evolução e Crescimento de Mercado (2023-2025), e Comparativo de Produtos e Atributos — todas construídas sobre o modelo de dados validado na Etapa 7.
+
+---
+
+## Etapa 9 — Consolidação Final da Documentação (com Claude)
+
+**Prompt utilizado:**
+
+```
+Preciso que atualize todos os documentos (roteiro, relatórios) com base no novo 
+dashboard construído. Substitua o que veio antes pelo que veio depois dos novos 
+dados. Depois de tudo atualizado vou precisar atualizar meu GitHub.
+```
+
+**O que foi produzido:** atualização do `roteiro_projeto.md` (seção 4 reescrita para refletir a estrutura real de 3 páginas do dashboard, em vez do plano original de 5-7 páginas) e deste arquivo (`prompts_utilizados.md`), documentando a etapa de trabalho com o Gemini para manter o registro fiel do percurso do projeto.
+
+---
+
 ## Observações sobre o Processo
 
 - Todas as buscas na web foram feitas em tempo real pelo Claude, com múltiplas consultas por tópico (preços, especificações, vendas, satisfação) para cruzar fontes antes de consolidar cada dado na base.
 - Nenhum modelo, preço ou métrica foi inventado. Onde a informação pública era incompleta, o campo foi marcado como "N/D" (não disponível) em vez de estimado.
 - Valores derivados matematicamente a partir de percentuais de crescimento divulgados oficialmente (quando o valor absoluto não estava disponível) foram sinalizados como "CALCULADO" diretamente nas células de observação da planilha.
-- O processo incluiu uma tentativa inicial com o Gemini (Google) para geração de um arquivo Excel, que apresentou um bug de geração de link de download — o que motivou a migração do trabalho de estruturação de dados para o Claude.
+- O processo combinou duas ferramentas de IA em etapas distintas: o **Claude** foi usado para pesquisa de dados, estruturação da base de dados, geração dos relatórios e modelagem do Power BI (relacionamentos e medidas DAX); o **Gemini** foi usado para a construção visual final das 3 páginas do dashboard e para a redação inicial da resposta do Cenário 1 do formulário. Essa divisão de ferramentas está registrada de forma transparente neste log, conforme exigido pelo desafio.
+- O processo incluiu uma tentativa inicial com o Gemini para geração de um arquivo Excel (etapa anterior à Etapa 1 deste log), que apresentou um bug de geração de link de download — o que motivou a migração do trabalho de estruturação de dados para o Claude. O Gemini foi reintroduzido mais adiante, com sucesso, na etapa de construção visual do dashboard (Etapa 8).
